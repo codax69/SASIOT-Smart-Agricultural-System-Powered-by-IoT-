@@ -1,25 +1,12 @@
-🌱 SASIOT — Smart Agricultural System Powered by IoT
+🌱 **SASIOT — Smart Agricultural System Powered by IoT**
 
 SASIOT is a complete IoT-based agriculture automation system built using the ESP32, Blynk IoT, and Firebase Realtime Database.  
 It enables farmers to monitor environmental conditions, automate irrigation and lighting, receive alerts, and store data for historical analysis — all from a mobile phone.
 
 
 
- 📖 Table of Contents
-- [Overview](overview)
-- [Key Features](key-features)
-- [Hardware Requirements](hardware-requirements)
-- [ESP32 Pin Configuration](esp32-pin-configuration)
-- [System Architecture](system-architecture)
-- [Software Setup](software-setup)
-- [Blynk Virtual Pin Mapping](blynk-virtual-pin-mapping)
-- [Data Flow](data-flow)
-- [Future Enhancements](future-enhancements)
-- [Author](author)
 
-
-
- 📌 Overview
+ 📌 Overview 
 
 SASIOT combines automation and remote monitoring to make farming smarter and more efficient.  
 The system:
