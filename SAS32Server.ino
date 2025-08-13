@@ -1,6 +1,6 @@
- #define BLYNK_TEMPLATE_ID "TMPL3UWLXBSMd"
-#define BLYNK_TEMPLATE_NAME "Smart Agricultural System Using IOT"
-#define BLYNK_AUTH_TOKEN "J-kSpp7kbLZpJoBFTbDm2vw_TQDtnaRA"
+#define BLYNK_TEMPLATE_ID "YOUR_TEMPLATE_ID"
+#define BLYNK_TEMPLATE_NAME "Smart Agricultural System Using IoT"
+#define BLYNK_AUTH_TOKEN "YOUR_BLYNK_AUTH_TOKEN"
 
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
@@ -9,18 +9,19 @@
 
 // Firebase ESP32 Library
 #include <Firebase_ESP_Client.h>
+
 // Provide token generation process info
 #include <addons/TokenHelper.h>
 // Provide RTDB payload printing info
 #include <addons/RTDBHelper.h>
 
 // Firebase database project settings
-#define DATABASE_URL "https://sasiot-default-rtdb.asia-southeast1.firebasedatabase.app/"
-#define API_KEY "AIzaSyC0Ok-OWBc9QY4OPf1jyGsNXBAWeLA8Bxo"
+#define DATABASE_URL "YOUR_FIREBASE_DATABASE_URL"
+#define API_KEY "YOUR_FIREBASE_API_KEY"
 
 // Wi-Fi Credentials
-char ssid[] = "Pritesh";
-char pass[] = "Piyu1618";
+char ssid[] = "YOUR_WIFI_SSID";
+char pass[] = "YOUR_WIFI_PASSWORD";
 
 // Pin Definitions for ESP32
 #define MQ7_PIN 34
@@ -85,11 +86,12 @@ BLYNK_WRITE(VP_SERVO) {
     smoothMoveServo(0);
   }
 }
+
 void IRAM_ATTR IR_interrupt() {
   ir_count++;
 }
 
-// **Trigger Buzzer 3 Times**
+// **Trigger Buzzer Multiple Times**
 void beepBuzzer(int beepNum) {
   for (int i = 0; i < beepNum; i++) {
     digitalWrite(BUZZER_PIN, HIGH);
@@ -134,8 +136,8 @@ void setup() {
   Serial.println("Setting up Firebase...");
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
-  auth.user.email = "prit9265@gmail.com";
-  auth.user.password = "Pritesh";
+  auth.user.email = "YOUR_FIREBASE_EMAIL";
+  auth.user.password = "YOUR_FIREBASE_PASSWORD";
 
   // Enable token status callback
   config.token_status_callback = tokenStatusCallback;
@@ -159,11 +161,12 @@ void loop() {
   int rain_value = analogRead(RAIN_PIN);
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
-  float wind_speed = ir_count * 5 /1000 ;
+  float wind_speed = ir_count * 5 / 1000;
 
   // **Convert Soil Moisture and LDR to Percentage**
   int soil_percentage = map(soil_value, 4095, 0, 0, 100);  // Invert and convert to percentage
   int light_percentage = map(ldr_value, 0, 4095, 0, 100);
+
   // **Serial Print Statements for Sensor Values**
   Serial.println("\n---- Sensor Data ----");
   Serial.print("MQ-7 Gas Sensor: ");
@@ -190,15 +193,11 @@ void loop() {
   Serial.println("---------------------");
 
   // **Water Pump Control**
-  // **Soil Moisture Pump Control**
-  // Both manual override and automatic control based on soil moisture
-  if (!manualPumpControl && soil_percentage > 25) {  // Example threshold 25%
+  if (!manualPumpControl && soil_percentage > soilMoistureThreshold) {
     digitalWrite(RELAY_MOTOR, HIGH);
     Blynk.logEvent("low_soil_mositure", "Low Soil Moisture - Pump ON!");
-
   } else {
     digitalWrite(RELAY_MOTOR, LOW);
-    Serial.print("Low Soil Moisture - Pump ON!");
   }
 
   // **Rain Detection & Buzzer Alert**
@@ -208,7 +207,7 @@ void loop() {
   }
 
   // **Low Light LED & Servo Control**
-  if (!manualLEDControl && ldr_value < 2000) {
+  if (!manualLEDControl && ldr_value < ldrThreshold) {
     digitalWrite(RELAY_LED, HIGH);
   } else {
     digitalWrite(RELAY_LED, LOW);
@@ -219,7 +218,7 @@ void loop() {
     Blynk.logEvent("high_temperature", "High Temperature!");
   }
 
-  if (!manualServoControl && ldr_value > 2000) {
+  if (!manualServoControl && ldr_value > ldrThreshold) {
     smoothMoveServo(70);
     beepBuzzer(4);
     Serial.println("High Light - Adjusting Servo!");
@@ -231,9 +230,11 @@ void loop() {
     smoothMoveServo(70);
     beepBuzzer(4);
   }
-  if(mq7_value > 1000){
+
+  if (mq7_value > 1000) {
     beepBuzzer(6);
   }
+
   // **Send Sensor Data to Blynk**
   Blynk.virtualWrite(V6, mq7_value);
   Blynk.virtualWrite(V7, temperature);
@@ -247,11 +248,9 @@ void loop() {
   if (millis() - lastFirebaseUpdate >= FIREBASE_INTERVAL) {
     lastFirebaseUpdate = millis();
 
-    // Check if Firebase is ready before sending data
     if (Firebase.ready()) {
       bool success = true;
 
-      // Using individual path method
       success &= Firebase.RTDB.setFloat(&fbdo, "/sensor_data/temperature", temperature);
       success &= Firebase.RTDB.setFloat(&fbdo, "/sensor_data/humidity", humidity);
       success &= Firebase.RTDB.setInt(&fbdo, "/sensor_data/soil_moisture", soil_percentage);
@@ -260,11 +259,9 @@ void loop() {
       success &= Firebase.RTDB.setFloat(&fbdo, "/sensor_data/wind_speed", wind_speed);
       success &= Firebase.RTDB.setInt(&fbdo, "/sensor_data/air_quality", mq7_value);
 
-      // Store timestamp (seconds since boot)
       unsigned long timestamp = millis() / 1000;
       success &= Firebase.RTDB.setInt(&fbdo, "/sensor_data/timestamp", timestamp);
 
-      // Store all data in a timestamped node for historical data
       FirebaseJson json;
       json.set("temperature", temperature);
       json.set("humidity", humidity);
@@ -277,11 +274,9 @@ void loop() {
       Serial.println("JSON Data:");
       json.toString(Serial, true);
 
-      // Push to history node with timestamp as child name
       String historyPath = "/sensor_history/" + String(timestamp);
       success &= Firebase.RTDB.setJSON(&fbdo, historyPath.c_str(), &json);
 
-      // Report success or failure
       if (success) {
         Serial.println("Data sent to Firebase successfully!");
       } else {
@@ -297,12 +292,10 @@ void loop() {
     }
   }
 
-  // Reset IR count after reading
   ir_count = 0;
-
-  // Small delay to prevent resource hogging
   delay(3000);
 }
+
 void smoothMoveServo(int targetPosition) {
   int currentPosition = myServo.read();
   if (currentPosition < targetPosition) {
