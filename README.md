@@ -57,19 +57,20 @@ The system:
 
  🛠 Hardware Requirements
 
-| Component | Quantity | Purpose |
-|--|-||
-| ESP32 Development Board | 1 | Main controller |
-| DHT11 Sensor | 1 | Temperature & Humidity |
-| MQ-7 Gas Sensor | 1 | Air Quality |
-| LDR Sensor | 1 | Light Detection |
-| Soil Moisture Sensor | 1 | Irrigation control |
-| Rain Sensor | 1 | Rain detection |
-| IR Sensor | 1 | Wind speed |
-| Relay Module (2-channel) | 1 | Pump & LED control |
-| Servo Motor | 1 | Shade control |
-| Buzzer | 1 | Alerts |
-| Power Supply & Jumper Wires | - | Circuit connections |
+| Component                   | Quantity | Purpose                |
+| --------------------------- | -------- | ---------------------- |
+| ESP32 Development Board     | 1        | Main controller        |
+| DHT11 Sensor                | 1        | Temperature & humidity |
+| MQ-7 Gas Sensor             | 1        | Air quality            |
+| LDR Sensor                  | 1        | Light detection        |
+| Soil Moisture Sensor        | 1        | Irrigation control     |
+| Rain Sensor                 | 1        | Rain detection         |
+| IR Sensor                   | 1        | Wind speed             |
+| Relay Module (2-channel)    | 1        | Pump & LED control     |
+| Servo Motor                 | 1        | Shade control          |
+| Buzzer                      | 1        | Alerts                 |
+| Power Supply & Jumper Wires | -        | Circuit connections    |
+
 
 
 
@@ -107,7 +108,7 @@ The system:
 
 1. Clone Repository
    ```bash
-   git clone https://github.com/yourusername/SASIOT.git
+   git clone https://github.com/codax69/SASIOT-Smart-Agricultural-System-Powered-by-IoT-.git
 2.	Install Required Libraries
 o	Blynk
 o	DHT Sensor Library
